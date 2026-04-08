@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>DQ Change of Ownership — Email Submission Form</title>
+<title>DQ Change of Ownership — Submission Form</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; padding: 2rem; color: #222; }
@@ -23,7 +23,6 @@
     font-size: 14px; background: #fafafa; color: #222; font-family: inherit;
   }
   input:focus, textarea:focus { outline: none; border-color: #6EFFD3; background: #fff; }
-  input[type=text], input[type=tel] { }
   input[type=email] { text-transform: lowercase; }
   textarea { resize: vertical; min-height: 70px; }
   .tid-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 10px; }
@@ -47,8 +46,6 @@
   .tooltip-box ol li { margin-bottom: 4px; }
   .input-error { border-color: #e05 !important; background: #fff5f7 !important; }
   .field-error { font-size: 11px; color: #e05; margin-top: 3px; display: block; }
-  .ach-header { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
-  .ach-header span { color: #bbb; margin: 0 4px; }
   .ach-option {
     width: 100%; padding: 14px 18px; border: 2px solid #e0e0e0; border-radius: 10px;
     margin-bottom: 10px; cursor: pointer; font-size: 14px; font-weight: 500;
@@ -57,25 +54,38 @@
   .ach-option:hover:not(.disabled) { border-color: #6EFFD3; background: #f0fdf8; }
   .ach-option.selected { border-color: #6EFFD3; background: #b7ffe9; color: #085041; font-weight: 600; }
   .ach-option.disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; background: #f5f5f5; border-color: #e0e0e0; }
-  .ach-checkbox { width: 16px; height: 16px; accent-color: #0F6E56; cursor: pointer; margin-right: 8px; vertical-align: middle; }
   .email-wrap { position: relative; }
   .email-star { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #e05; font-size: 16px; font-weight: 700; display: none; }
   .phone-wrap { position: relative; }
   .phone-star { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #e05; font-size: 16px; font-weight: 700; display: none; }
+  /* ===== STORE NUMBER PREFIX STYLES ===== */
+  .store-input-wrap { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; overflow: hidden; }
+  .store-prefix { padding: 8px 10px; font-size: 13px; font-weight: 600; color: #085041; background: #e8fff6; border-right: 1px solid #ddd; white-space: nowrap; }
+  .store-input-wrap input { border: none; outline: none; background: transparent; padding: 8px 10px; font-size: 14px; flex: 1; width: 100%; }
+  .store-input-wrap:focus-within { border-color: #6EFFD3; background: #fff; }
+  .store-input-wrap.input-error { border-color: #e05 !important; background: #fff5f7 !important; }
+  .store-hint { font-size: 11px; color: #999; margin-top: 3px; display: block; }
+  .store-hint strong { color: #085041; font-weight: 600; }
 </style>
 </head>
 <body>
 <div class="page">
   <div class="header">
     <h1>Dairy Queen — Change of Ownership Form</h1>
-    <p>Complete all sections below. Click "Submit via email" when done — your responses will be sent directly to i.DQafterhours@SMOKESTACK.VERIFONE.com.</p>
+    <p>Complete all sections below. Click "Submit" when done — your responses will be sent directly to the DQ After Hours team.</p>
   </div>
   <div class="body">
 
     <div class="section">
       <div class="section-title">Store information</div>
       <div class="field-grid">
-        <div class="field"><label>Store number</label><input id="e-store" type="text" placeholder="e.g. DQ012345" oninput="this.value=this.value.toUpperCase()"/></div>
+        <div class="field"><label>Store number</label>
+          <div class="store-input-wrap" id="store-wrap">
+            <span class="store-prefix">DAIRY QUEEN #</span>
+            <input id="e-store" type="text" placeholder="12345" maxlength="5" oninput="this.value=this.value.replace(/\D/g,'').slice(0,5); updateStorePreview();"/>
+          </div>
+          <span class="store-hint" id="store-hint">Enter 5 digits — will be submitted as <strong>DQ0XXXXX</strong></span>
+        </div>
         <div class="field">
           <div class="label-wrap">
             <label>Effective date of ownership change</label>
@@ -96,9 +106,9 @@
         <div class="field"><label>Zip code</label><input id="e-zip" type="text" maxlength="5" placeholder="12345" oninput="this.value=this.value.replace(/\D/g,'').slice(0,5); if(this.value.length===5) lookupZip(this.value);"/></div>
         <div class="field"><label>City</label>
           <select id="e-city" onchange="toggleCityOther(this)" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:14px; background:#fafafa; color:#222; font-family:inherit;">
-            <option value="">— Enter a zip code first —</option>
+            <option value="">— Enter zip code first —</option>
           </select>
-          <input id="e-city-other" type="text" placeholder="Type city name" style="display:none; margin-top:6px; width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:14px; background:#fafafa; color:#222; font-family:inherit;" oninput="applyTitleCase(this)"/>
+          <input type="text" id="e-city-other" placeholder="Type city name" style="display:none; margin-top:6px;"/>
         </div>
         <div class="field"><label>State</label>
           <select id="e-state" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:14px; background:#fafafa; color:#222; font-family:inherit;">
@@ -159,9 +169,9 @@
       </div>
       <p style="font-size:13px; color:#666; margin-bottom:10px;">Please list below the active devices used in the store:</p>
       <div id="serial-rows">
-        <div class="serial-row"><input type="text" placeholder="e.g. 123-456-789" maxlength="11" oninput="formatSerial(this)"/><span class="serial-star">*</span><button class="remove-btn" type="button" onclick="this.closest('.serial-row').remove()">×</button></div>
+        <div class="serial-row"><input type="text" placeholder="e.g. 123-456-789" maxlength="11" oninput="formatSerial(this)"/><span class="serial-star" style="color:#e05;font-size:16px;font-weight:700;display:none;">*</span><button class="remove-btn" type="button" onclick="this.closest('.serial-row').remove()">×</button></div>
       </div>
-      <button class="add-btn" type="button" id="add-serial-btn" onclick="addSerialRow()">+ Add another serial number</button>
+      <button class="add-btn" type="button" onclick="addSerialRow()">+ Add another serial number</button>
     </div>
 
     <div class="section">
@@ -190,15 +200,14 @@
     <div class="section">
       <div class="section-title">ACH <span style="color:#bbb; font-weight:400;">/</span> Banking</div>
       <div class="ach-option" onclick="selectACHCompleted(this)">
-        I have already completed the Verifone Merchant Agreement
+        I have already completed the Verifone PWC ACH form
       </div>
       <div class="ach-option" id="ach-not-completed" onclick="selectACHNotCompleted(this)">
-        I have not completed the Verifone Merchant Agreement
-        <br/><a id="ach-link" href="https://na1.documents.adobe.com/public/esignWidget?wid=CBFCIBAA3AAABLblqZhDUJiLyuT0vyX-jOp2u5zF6UUzmGhz1Rpb_Gt6JrJtpfgeqKzD_t6n2EyziARnrxb8*" target="_blank" rel="noopener" style="font-size:12px; color:#0F6E56; text-decoration:underline;">Click here to open the ACH form</a>
+        I have not completed the Verifone PWC ACH form — click here to complete it
       </div>
     </div>
 
-    <button class="submit-btn" onclick="submitEmail()">Submit via email</button>
+    <button class="submit-btn" onclick="submitEmail()">Submit</button>
 
   </div>
 </div>
@@ -208,10 +217,7 @@ function checkWeekend(el) {
   var parts = el.value.split('-');
   var selected = new Date(parts[0], parts[1] - 1, parts[2]);
   var day = selected.getDay();
-  if (day === 0 || day === 6) {
-    alert('Weekends (Saturday & Sunday) are not available. Please select a weekday.');
-    el.value = '';
-  }
+  if (day === 0 || day === 6) { alert('Weekends (Saturday & Sunday) are not available. Please select a weekday.'); el.value = ''; }
 }
 
 var achStatus = '';
@@ -326,58 +332,12 @@ function formatSerial(el) {
 }
 
 function addSerialRow() {
-  const container = document.getElementById('serial-rows');
-  const row = document.createElement('div');
-  row.className = 'serial-row';
-  row.innerHTML = '<input type="text" placeholder="e.g. 123-456-789" maxlength="11" oninput="formatSerial(this)"/><span class="serial-star">*</span><button class="remove-btn" type="button" onclick="this.closest(\'.serial-row\').remove()">×</button>';
-  container.appendChild(row);
+  var c = document.getElementById('serial-rows');
+  var r = document.createElement('div');
+  r.className = 'serial-row';
+  r.innerHTML = '<input type="text" placeholder="e.g. 123-456-789" maxlength="11" oninput="formatSerial(this)"/><span class="serial-star" style="color:#e05;font-size:16px;font-weight:700;display:none;">*</span><button class="remove-btn" type="button" onclick="this.closest(\'.serial-row\').remove()">×</button>';
+  c.appendChild(r);
 }
-
-function toTitleCase(str) {
-  var upperWords = ['LLC','DQ','INC','CO','LP','LLP','PC','PA','PLLC','NA','NE','NW','SE','SW','PO','APT','STE','FL','HQ','II','III','IV'];
-  return str.replace(/\w\S*/g, function(t) {
-    var upper = t.toUpperCase();
-    if (upperWords.indexOf(upper) !== -1) return upper;
-    return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase();
-  });
-}
-
-function applyTitleCase(el) {
-  var start = el.selectionStart;
-  var end = el.selectionEnd;
-  el.value = toTitleCase(el.value);
-  el.setSelectionRange(start, end);
-}
-
-function applyLowerCase(el) {
-  var start = el.selectionStart;
-  var end = el.selectionEnd;
-  el.value = el.value.toLowerCase();
-  el.setSelectionRange(start, end);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('e-date').setAttribute('min', today);
-  var titleFields = ['e-addr','e-entity','e-contact'];
-  titleFields.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('input', function() { applyTitleCase(this); });
-      el.addEventListener('blur', function() { this.value = this.value.trimEnd(); });
-    }
-  });
-  var emailEl = document.getElementById('e-email');
-  if (emailEl) {
-    emailEl.addEventListener('input', function() { applyLowerCase(this); });
-    emailEl.addEventListener('blur', function() { this.value = this.value.trimEnd(); });
-  }
-  var trimFields = ['e-store','e-zip'];
-  trimFields.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.addEventListener('blur', function() { this.value = this.value.trimEnd(); });
-  });
-});
 
 function checkMidLength() {
   var el = document.getElementById('e-mid');
@@ -455,9 +415,62 @@ function toBold(str) {
   }).join('');
 }
 
+function toTitleCase(str) {
+  var u = ['LLC','DQ','INC','CO','LP','LLP','PC','PA','PLLC','NA','NE','NW','SE','SW','PO','APT','STE','FL','HQ','II','III','IV'];
+  return str.replace(/\w\S*/g, function(t) { var up = t.toUpperCase(); if (u.indexOf(up) !== -1) return up; return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase(); });
+}
+
+function applyTitleCase(el) { var s = el.selectionStart; var e = el.selectionEnd; el.value = toTitleCase(el.value); el.setSelectionRange(s, e); }
+function applyLowerCase(el) { var s = el.selectionStart; var e = el.selectionEnd; el.value = el.value.toLowerCase(); el.setSelectionRange(s, e); }
+
+/* ===== STORE NUMBER HELPER ===== */
+function getStoreNumber() {
+  var digits = document.getElementById('e-store').value.trim();
+  return digits ? 'DQ0' + digits : '';
+}
+
+function updateStorePreview() {
+  var digits = document.getElementById('e-store').value.trim();
+  var hint = document.getElementById('store-hint');
+  if (digits.length === 5) {
+    hint.innerHTML = 'Will be submitted as <strong>DQ0' + digits + '</strong>';
+    hint.style.color = '#085041';
+  } else if (digits.length > 0) {
+    hint.innerHTML = 'Enter ' + (5 - digits.length) + ' more digit' + (5 - digits.length !== 1 ? 's' : '') + ' — will be submitted as <strong>DQ0XXXXX</strong>';
+    hint.style.color = '#999';
+  } else {
+    hint.innerHTML = 'Enter 5 digits — will be submitted as <strong>DQ0XXXXX</strong>';
+    hint.style.color = '#999';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('e-date').setAttribute('min', today);
+  ['e-addr','e-entity','e-contact'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', function() { applyTitleCase(this); });
+      el.addEventListener('blur', function() { this.value = this.value.trimEnd(); });
+    }
+  });
+  var emailEl = document.getElementById('e-email');
+  if (emailEl) {
+    emailEl.addEventListener('input', function() { applyLowerCase(this); });
+    emailEl.addEventListener('blur', function() { this.value = this.value.trimEnd(); });
+  }
+  ['e-store','e-zip'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('blur', function() { this.value = this.value.trimEnd(); });
+  });
+});
+
 function clearErrors() {
   document.querySelectorAll('.field-error').forEach(el => el.remove());
   document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+  /* Also clear store wrapper error */
+  var storeWrap = document.getElementById('store-wrap');
+  if (storeWrap) storeWrap.classList.remove('input-error');
 }
 
 function showError(id, msg) {
@@ -472,6 +485,17 @@ function showError(id, msg) {
   }
 }
 
+function showStoreError(msg) {
+  var wrap = document.getElementById('store-wrap');
+  wrap.classList.add('input-error');
+  if (msg) {
+    var err = document.createElement('span');
+    err.className = 'field-error';
+    err.textContent = msg;
+    wrap.parentNode.appendChild(err);
+  }
+}
+
 function submitEmail() {
   clearErrors();
   const g = id => document.getElementById(id)?.value.trim() || '';
@@ -482,8 +506,13 @@ function submitEmail() {
   }
   let valid = true;
 
+  /* Store number validation — 5 digits required */
+  var storeDigitsRaw = g('e-store');
+  if (!storeDigitsRaw) { showStoreError('Store number is required.'); valid = false; }
+  else if (storeDigitsRaw.length !== 5) { showStoreError('Store number must be exactly 5 digits.'); valid = false; }
+
   const required = [
-    ['e-store','Store number is required.'],['e-date','Effective date is required.'],['e-addr','Store address is required.'],['e-state','State is required.'],['e-zip','Zip code is required.'],['e-entity','Legal entity / business name is required.'],['e-contact','Contact name is required.'],['e-phone','Phone number is required.'],['e-email','Email address is required.'],['e-mid','Merchant ID (MID) is required.'],['e-wkday','Weekday opening time is required.'],['e-tz','Time zone is required.'],
+    ['e-date','Effective date is required.'],['e-addr','Store address is required.'],['e-state','State is required.'],['e-zip','Zip code is required.'],['e-entity','Legal entity / business name is required.'],['e-contact','Contact name is required.'],['e-phone','Phone number is required.'],['e-email','Email address is required.'],['e-mid','Merchant ID (MID) is required.'],['e-wkday','Weekday opening time is required.'],['e-tz','Time zone is required.'],
   ];
   required.forEach(([id, msg]) => { if (!g(id)) { showError(id, msg); valid = false; } });
 
@@ -551,10 +580,13 @@ function submitEmail() {
   }
 
   if (!valid) {
-    const firstErr = document.querySelector('.input-error, .ach-option[style*="e05"]');
+    const firstErr = document.querySelector('.input-error, .store-input-wrap.input-error, .ach-option[style*="e05"]');
     if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
+
+  /* ===== Build payload using getStoreNumber() ===== */
+  var storeNumber = getStoreNumber();
 
   const tids = tidVals.map((t, i) => `TID ${i+1}: ${t}`).join('\n');
   const serials = serialInputs.map(i => i.value.trim()).filter(Boolean).join('\n');
@@ -562,37 +594,32 @@ function submitEmail() {
   var rawDate = g('e-date');
   var formattedDate = rawDate;
   if (rawDate) { var parts = rawDate.split('-'); formattedDate = parts[1] + '/' + parts[2] + '/' + parts[0]; }
-  const achText = achStatus === 'completed' ? 'Already completed the Verifone Merchant Agreement.\n(Ask i.POINT.Billing if recent forms have been received from ' + g('e-email').toLowerCase() + ')' : 'Has NOT completed the Verifone Merchant Agreement.\n(Ask i.POINT.Billing if recent forms have been received from ' + g('e-email').toLowerCase() + ')';
+  const achText = achStatus === 'completed' ?
+    'Already completed the Verifone PWC ACH form.\n(Ask i.POINT.Billing if recent forms have been received from ' + g('e-email').toLowerCase() + ')' :
+    'Has NOT completed the Verifone PWC ACH form.\n(Ask i.POINT.Billing if recent forms have been received from ' + g('e-email').toLowerCase() + ')';
 
-  const body = `DQ Change of Ownership Form Submission
+  var payload = {
+    storeNumber: storeNumber, storeDigits: storeNumber.replace(/\D/g, ''), effectiveDate: formattedDate,
+    address: toTitleCase(g('e-addr')), city: toTitleCase(getCityValue()), state: g('e-state'), zip: g('e-zip'),
+    legalEntity: toTitleCase(g('e-entity')), contactName: toTitleCase(g('e-contact')),
+    phone: g('e-phone').replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'),
+    email: g('e-email').toLowerCase(), processor: g('e-proc'), mid: g('e-mid'),
+    tid1: g('e-tid1'), tid2: g('e-tid2'), tid3: g('e-tid3'), tid4: g('e-tid4'), tid5: g('e-tid5'), tid6: g('e-tid6'),
+    serialNumbers: serials.replace(/\n/g, '<br/>'), weekdayOpening: wkdayVal, timezone: g('e-tz') || 'Not specified',
+    achStatus: achText.replace(/\n/g, '<br/>')
+  };
 
-${toBold('STORE INFORMATION')}
-Store number: ${g('e-store')}
-Effective date: ${formattedDate}
-Address: ${toTitleCase(g('e-addr'))}, ${toTitleCase(getCityValue())}, ${g('e-state')} ${g('e-zip')}
+  var submitBtn = document.querySelector('.submit-btn');
+  submitBtn.textContent = 'Sending...'; submitBtn.disabled = true;
 
-${toBold('NEW OWNER CONTACT INFORMATION')}
-Legal entity: ${toTitleCase(g('e-entity'))}
-Contact name: ${toTitleCase(g('e-contact'))}
-Phone: ${g('e-phone').replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')}
-Email: ${g('e-email').toLowerCase()}
-
-${toBold('PROCESSOR INFORMATION')}
-Processor: ${g('e-proc')}
-Merchant ID (MID): ${g('e-mid')}
-${tids}
-
-${toBold('ACTIVE DEVICES (Serial Numbers)')}
-${serials}
-
-${toBold('STORE OPENING HOURS')}
-Weekdays Opening Time: ${wkdayVal}
-Time zone: ${g('e-tz') || 'Not specified'}
-
-${toBold('ACH / BANKING')}
-${achText}`;
-
-  window.location.href = 'mailto:i.DQafterhours@SMOKESTACK.VERIFONE.com?cc=fsc@idq.com&subject=' + encodeURIComponent('DQ Change of Ownership — ' + (g('e-store') || 'Store TBD')) + '&body=' + encodeURIComponent(body);
+  fetch('https://default611a22d68c40495884e3ce47d8205d.98.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/72085f00ff2b417aac4af38fe3741fe7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=X8rB2UzlcAb7P9Rfs263-jdtp0zghsV_0yVry8Y8ETA', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+  })
+  .then(function(response) {
+    if (response.ok || response.status === 202) { submitBtn.textContent = 'Submitted successfully!'; submitBtn.style.background = '#4de8bc'; alert('Form submitted successfully! The email has been sent automatically.'); }
+    else { throw new Error('Server responded with ' + response.status); }
+  })
+  .catch(function(err) { submitBtn.textContent = 'Submit'; submitBtn.disabled = false; alert('There was an error submitting the form. Please try again or contact support.\n\nError: ' + err.message); });
 }
 </script>
 </body>
